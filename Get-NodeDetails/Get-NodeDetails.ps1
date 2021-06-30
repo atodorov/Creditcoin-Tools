@@ -61,6 +61,8 @@ foreach ($node in $nodes) {
 					$diff = $cParts[1]
 					$tip = $data.data.header.block_num
 					$consensus = $cParts[0]
+					$timestamp = $cParts[3]
+					$timestamp = (([System.DateTimeOffset]::FromUnixTimeSeconds($timestamp)).DateTime).ToString("u")
 					$blockID = $data.data.header_signature
 					$blockID = $blockID.Substring(0,5) + "..." + $blockID.Substring(123,5)
 					
@@ -124,6 +126,7 @@ foreach ($node in $nodes) {
 					Closed = $peersClosed
 					Tip = $tip
 					BlockID = $blockID
+					Timestamp = $timestamp
 					Housekeeping = $housekeeping
 					Consensus = $consensus
 					Difficulty = $diff
@@ -192,6 +195,7 @@ foreach ($node in $allNodes) {
 		Closed = $node.Closed		
 		Tip = $node.Tip
 		BlockID = $node.BlockID
+		Timestamp = $node.Timestamp
 		Housekeeping = $node.Housekeeping
 		Consensus = $node.Consensus
 		Difficulty = $node.Difficulty
@@ -201,7 +205,7 @@ foreach ($node in $allNodes) {
 	$allNodesWithchange += $object
 }
 
-$allNodesWithchange | Sort-Object -Descending { [int]$_.Tip } | Format-Table Node,Peers,Open,Closed,Tip,BlockID,Housekeeping,Difficulty,Consensus,Change
+$allNodesWithchange | Sort-Object -Descending { [int]$_.Tip } | Format-Table Node,Peers,Open,Closed,Tip,BlockID,Timestamp,Housekeeping,Difficulty,Consensus,Change
 $allNodesWithchange | Export-Csv $csvFile
 
 Write-Host ("*"*75)
