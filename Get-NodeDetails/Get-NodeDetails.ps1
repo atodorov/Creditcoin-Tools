@@ -21,14 +21,12 @@ foreach ($octet in $octets){
 }
 
 # Add Gluwa nodes
-$nodes += "http://creditcoin-gateway.gluwa.com:8008",
-           "http://creditcoin-node.gluwa.com:8008",
-           "http://node-000.creditcoin.org:8008",
-           "http://node-001.creditcoin.org:8008",
-           "http://node-002.creditcoin.org:8008",
-           "http://node-003.creditcoin.org:8008",
-           "http://node-004.creditcoin.org:8008",
-           "http://node-005.creditcoin.org:8008"
+$nodes += "http://54.185.193.31:8008",
+           "http://54.244.68.135:8008",
+           "http://40.112.252.222:8008",
+           "http://20.188.27.55:8008",
+           "http://20.87.27.245:8008",
+           "http://20.113.27.206:8008"
 		   
 $nodes = $nodes | where {$_ -notmatch "149."} | sort | unique
 $nodes = $nodes | where {$_ -notmatch "40.118.206.48"} | sort | unique
