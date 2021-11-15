@@ -1,3 +1,7 @@
+param (
+    [switch]$logs = $false
+)
+
 Write-Host ""
 Write-Host "$(Get-Date)"
 
@@ -207,5 +211,21 @@ foreach ($node in $allNodes) {
 
 $allNodesWithchange | Sort-Object -Descending { [int]$_.Tip } | Format-Table Node,Peers,Open,Closed,Tip,BlockID,Timestamp,Housekeeping,Difficulty,Consensus,Change
 $allNodesWithchange | Export-Csv $csvFile
+
+# download logs from remote systems
+if ($logs) {
+	foreach ($node in $nodes) {
+		$NODE_IP = $node.Split(":")[1].Split("//")[1]
+		Write-Host "INFO: downloading logs for $NODE_IP"
+
+		ssh ubuntu@$NODE_IP "mkdir -p ~/Logs-`$(hostname)"
+		ssh ubuntu@$NODE_IP "for containerName in `$(docker ps -a --format '{{.Names}}'); do docker logs --timestamps `$containerName >~/Logs-`$(hostname)/`$containerName.log 2>&1; done"
+		ssh ubuntu@$NODE_IP "zip -qr Logs-`$(hostname).zip Logs-`$(hostname)/"
+
+		scp -q ubuntu@$NODE_IP`:~/Logs-*.zip /tmp
+	}
+
+	Write-Host "INFO: Done!"
+}
 
 Write-Host ("*"*75)
