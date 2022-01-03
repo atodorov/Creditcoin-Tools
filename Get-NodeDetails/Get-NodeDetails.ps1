@@ -30,7 +30,8 @@ $nodes += "http://54.185.193.31:8008",
            "http://40.112.252.222:8008",
            "http://20.188.27.55:8008",
            "http://20.87.27.245:8008",
-           "http://20.113.27.206:8008"
+           "http://20.113.27.206:8008",
+           "http://70.71.253.213:8008"
 		   
 $nodes = $nodes | where {$_ -notmatch "149."} | sort | unique
 $nodes = $nodes | where {$_ -notmatch "40.118.206.48"} | sort | unique
