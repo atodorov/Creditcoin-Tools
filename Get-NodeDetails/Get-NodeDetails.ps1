@@ -30,6 +30,37 @@ $nodes += "http://creditcoin-gateway.gluwa.com:8008",
            "http://node-004.creditcoin.org:8008",
            "http://node-005.creditcoin.org:8008"
 		   
+
+# Discover external, non-Gluwa nodes, for a more-complete reference
+$external_nodes = @()
+foreach ($node in $nodes) {
+	$nodeParts = $node -replace "http://","" -split ":"
+
+	if ((Test-Connection -IPv4 $nodeParts[0] -TCPPort $nodeParts[1] -TimeoutSeconds 2) -eq $false) {
+		Write-Warning "Node $($nodeParts[0]) is unreachable"
+		continue
+	}
+
+	# Get peers info
+	try {
+		$peers = Invoke-RestMethod -TimeoutSec 10 -Uri "$node/peers" -ErrorAction SilentlyContinue
+
+		foreach($peer in $peers.data) {
+			$peer = $peer -Replace "tcp://","http://" -Replace ":8800",":8008"
+			If (($peer -In $nodes) -Or ($peer -In $external_nodes)) {
+				# skip
+			} Else {
+				$external_nodes += $peer
+			}
+		}
+	}
+	catch {
+		continue
+	}
+}
+Write-Warning "EXTERNAL PEERS: $external_nodes"
+$nodes += $external_nodes
+
 $nodes = $nodes | where {$_ -notmatch "149."} | sort | unique
 $nodes = $nodes | where {$_ -notmatch "40.118.206.48"} | sort | unique
 
